@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+// Piece attributes ============================================================================= //
 #[derive(Clone, Copy, PartialEq)]
 pub enum PieceColor {
     White,
@@ -25,6 +26,16 @@ pub struct Piece {
     pub y: u8,
 }
 
+// Pieces plugin ================================================================================ //
+pub struct PiecesPlugin;
+impl Plugin for PiecesPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_startup_system(create_pieces.system())
+            .add_system(move_pieces.system());
+    }
+}
+
+// pieces spawn functions ======================================================================= //
 fn spawn_king(
     commands: &mut Commands,
     material: Handle<StandardMaterial>,
@@ -256,8 +267,8 @@ fn spawn_pawn(
         });
 }
 
-
-pub fn create_pieces(
+// create pieces ================================================================================ //
+fn create_pieces(
     commands: &mut Commands,
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -429,6 +440,19 @@ pub fn create_pieces(
             pawn_handle.clone(),
             (6, i),
         );
+    }
+}
+
+// piece movement =============================================================================== //
+fn move_pieces(time: Res<Time>, mut query: Query<(&mut Transform, &Piece)>) {
+    for (mut transform, piece) in query.iter_mut() {
+        // Get the direction to move in
+        let direction = Vec3::new(piece.x as f32, 0., piece.y as f32) - transform.translation;
+
+        // Only move if the piece isn't already there (distance is big)
+        if direction.length() > 0.1 {
+            transform.translation += direction.normalize() * time.delta_seconds();
+        }
     }
 }
 
