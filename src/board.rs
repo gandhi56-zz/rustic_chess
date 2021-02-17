@@ -91,17 +91,20 @@ impl Plugin for BoardPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.init_resource::<SelectedSquare>()
             .init_resource::<SelectedPiece>()
+            .init_resource::<PlayerTurn>()
             .add_startup_system(create_board.system())
             .add_system(color_squares.system())
             .add_system(select_square.system());
     }
 }
+
 fn select_square(
     commands: &mut Commands,
     pick_state: Res<PickState>,
     mouse_button_inputs: Res<Input<MouseButton>>,
     mut selected_square: ResMut<SelectedSquare>,
     mut selected_piece: ResMut<SelectedPiece>,
+    mut turn: ResMut<PlayerTurn>,
     squares_query: Query<&Square>,
     mut pieces_query: Query<(Entity, &mut Piece, &Children)>,
 ) {
@@ -156,13 +159,19 @@ fn select_square(
                         // Move piece
                         piece.x = square.x;
                         piece.y = square.y;
+
+                        turn.0 = match turn.0 {
+                            PieceColor::White => PieceColor::Black,
+                            PieceColor::Black => PieceColor::White,
+                        }
                     }
                 }
                 selected_piece.entity = None;
+                selected_square.entity = None;
             } else {
                 // Select the piece in the currently selected square
                 for (piece_entity, piece, _) in pieces_query.iter_mut() {
-                    if piece.x == square.x && piece.y == square.y {
+                    if piece.x == square.x && piece.y == square.y && piece.color == turn.0 {
                         // piece_entity is now the entity in the same square
                         selected_piece.entity = Some(piece_entity);
                         break;
@@ -174,6 +183,14 @@ fn select_square(
         // Player clicked outside the board, deselect everything
         selected_square.entity = None;
         selected_piece.entity = None;
+    }
+}
+
+// Turns ======================================================================================== //
+struct PlayerTurn(PieceColor);
+impl Default for PlayerTurn{
+    fn default() -> Self{
+        Self(PieceColor::White)
     }
 }
 
