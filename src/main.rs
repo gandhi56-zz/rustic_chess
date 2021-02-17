@@ -6,12 +6,8 @@ mod board;
 mod ui;
 
 use pieces::*;
-use board::create_board;
 use crate::board::BoardPlugin;
 use crate::ui::UIPlugin;
-
-const ROWS: i32 = 8;
-const COLS: i32 = 0;
 
 fn main() {
     App::build()
@@ -33,8 +29,8 @@ fn main() {
 
 fn setup(
     commands: &mut Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    _meshes: ResMut<Assets<Mesh>>,
+    _materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands
         // Camera

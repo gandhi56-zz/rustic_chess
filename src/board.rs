@@ -3,6 +3,9 @@ use bevy_mod_picking::{PickableMesh, PickState, Group};
 use crate::pieces::*;
 use bevy::app::AppExit;
 
+const ROWS: u8 = 8;
+const COLS: u8 = 8;
+
 pub struct Square{
     pub x: u8,
     pub y: u8,
@@ -33,8 +36,8 @@ pub fn create_board(
     let mesh = meshes.add(Mesh::from(shape::Plane { size: 1. }));
 
     // Spawn 64 squares
-    for i in 0..8 {
-        for j in 0..8 {
+    for i in 0..ROWS {
+        for j in 0..COLS {
             commands
                 .spawn(PbrBundle {
                     mesh: mesh.clone(),
