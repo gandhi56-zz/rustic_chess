@@ -1,5 +1,5 @@
 [package]
-name = "LVI_chess"
+name = "rustic_chess"
 version = "0.1.0"
 authors = ["gandhi56 <gandhi21299@gmail.com>"]
 edition = "2018"
