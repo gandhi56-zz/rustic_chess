@@ -3,10 +3,12 @@ use bevy_mod_picking::*;
 
 mod pieces;
 mod board;
+mod ui;
 
 use pieces::*;
 use board::create_board;
 use crate::board::BoardPlugin;
+use crate::ui::UIPlugin;
 
 const ROWS: i32 = 8;
 const COLS: i32 = 0;
@@ -24,6 +26,7 @@ fn main() {
         .add_plugin(PickingPlugin)
         .add_plugin(BoardPlugin)
         .add_plugin(PiecesPlugin)
+        .add_plugin(UIPlugin)
         .add_startup_system(setup.system())
         .run();
 }

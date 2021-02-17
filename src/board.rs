@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_mod_picking::{PickableMesh, PickState, Group};
 use crate::pieces::*;
+use bevy::app::AppExit;
 
 pub struct Square{
     pub x: u8,
@@ -97,7 +98,6 @@ impl Plugin for BoardPlugin {
             .add_system(select_square.system());
     }
 }
-
 fn select_square(
     commands: &mut Commands,
     pick_state: Res<PickState>,
@@ -105,6 +105,7 @@ fn select_square(
     mut selected_square: ResMut<SelectedSquare>,
     mut selected_piece: ResMut<SelectedPiece>,
     mut turn: ResMut<PlayerTurn>,
+    mut app_exit_events: ResMut<Events<AppExit>>,
     squares_query: Query<&Square>,
     mut pieces_query: Query<(Entity, &mut Piece, &Children)>,
 ) {
@@ -147,6 +148,18 @@ fn select_square(
                                 && other_piece.y == square.y
                                 && other_piece.color != piece.color
                             {
+                                // If the king is taken, we should exit
+                                if other_piece.piece_type == PieceType::King {
+                                    println!(
+                                        "{} won! Thanks for playing!",
+                                        match turn.0 {
+                                            PieceColor::White => "White",
+                                            PieceColor::Black => "Black",
+                                        }
+                                    );
+                                    app_exit_events.send(AppExit);
+                                }
+
                                 // Despawn piece
                                 commands.despawn(other_entity);
                                 // Despawn all of it's children
@@ -186,8 +199,9 @@ fn select_square(
     }
 }
 
+
 // Turns ======================================================================================== //
-struct PlayerTurn(PieceColor);
+pub(crate) struct PlayerTurn(pub(crate) PieceColor);
 impl Default for PlayerTurn{
     fn default() -> Self{
         Self(PieceColor::White)
