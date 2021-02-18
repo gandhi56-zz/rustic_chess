@@ -10,16 +10,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    steps: 
-    - run: sudo apt-get install libsdl2-dev libasound2-dev
 
   build:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install
+      run: sudo apt-get install libsdl2-dev libasound2-dev
     - name: Build
       run: cargo build --verbose
     - name: Run tests
