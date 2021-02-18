@@ -313,7 +313,7 @@ fn spawn_bishop(
         });
 }
 
-fn spawn_rook(
+pub fn spawn_rook(
     commands: &mut Commands,
     material: Handle<StandardMaterial>,
     piece_color: PieceColor,
