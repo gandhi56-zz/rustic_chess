@@ -1,5 +1,4 @@
 name: Rust
-  - run: apt-get install libsdl2-dev
 
 on:
   push:
@@ -14,6 +13,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    - run: apt-get install libsdl2-dev
 
     steps:
     - uses: actions/checkout@v2
