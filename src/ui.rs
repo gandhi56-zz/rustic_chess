@@ -63,18 +63,10 @@ fn next_move_text_update(
     }
 }
 
-/// Demo system to show off Query transformers
-fn log_text_changes(query: Query<&Text, Mutated<Text>>) {
-    for text in query.iter() {
-        println!("New text: {}", text.value);
-    }
-}
-
 pub struct UIPlugin;
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system(init_next_move_text.system())
-            .add_system(next_move_text_update.system())
-            .add_system(log_text_changes.system());
+            .add_system(next_move_text_update.system());
     }
 }

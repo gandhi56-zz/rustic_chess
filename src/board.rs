@@ -161,6 +161,13 @@ fn select_piece(
     }
 }
 
+fn get_material(mut materials: ResMut<Assets<StandardMaterial>>, color: &PieceColor) -> Handle<StandardMaterial> {
+    match color{
+        PieceColor::Black => return materials.add(Color::rgb(0., 0.2, 0.2).into()),
+        PieceColor::White => return materials.add(Color::rgb(1., 0.8, 0.8).into()),
+    }
+}
+
 fn move_piece(
     commands: &mut Commands,
     selected_square: ChangedRes<SelectedSquare>,
@@ -205,8 +212,6 @@ fn move_piece(
             match piece.piece_type{
                 PieceType::King =>{
                     if piece.x == square.x && piece.y == 4 && square.y == 6{
-                        // move king to its new position
-                        piece.y = 6;
 
                         // find corresponding rook, take it out and respawn it to its new position
                         for (other_entity, other_piece) in &pieces_entity_vec{
@@ -215,26 +220,22 @@ fn move_piece(
                                 other_piece.piece_type == PieceType::Rook &&
                                 other_piece.color == piece.color{
 
+                                    // move king to its new position
+                                    piece.y = 6;
+
                                     // take the castle rook out
                                     commands.insert_one(*other_entity, Taken);
 
                                     // respawn rook at its new position
-                                    spawn_rook(
-                                        commands,
-                                        match piece.color{
-                                            PieceColor::Black => materials.add(Color::rgb(0., 0.2, 0.2).into()),
-                                            PieceColor::White => materials.add(Color::rgb(1., 0.8, 0.8).into()),
-                                        },
-                                        piece.color,
+                                    spawn_rook(commands, get_material(materials, &piece.color), piece.color, 
                                         asset_server.load("models/chess_kit/pieces.glb#Mesh5/Primitive0"),
                                         (piece.x, 5)
                                     );
+
+                                    turn.change();
+                                    return;
                                 }
                         }
-
-                        // toggle turn
-                        turn.change();
-                        return;
                     }
                     else if piece.x == square.x && piece.y == 4 && square.y == 2{
                                                 // find corresponding rook, take it out and respawn it to its new position

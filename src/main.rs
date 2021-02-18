@@ -13,7 +13,7 @@ fn main() {
     App::build()
         .add_resource(Msaa{samples: 4}) // anti-aliasing enabled
         .add_resource(WindowDescriptor{               // setup window
-            title: "LVI Chess".to_string(),
+            title: "Rustic Chess".to_string(),
             width: 1600.,
             height: 1600.,
             ..Default::default()
