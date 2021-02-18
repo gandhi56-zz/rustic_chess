@@ -5,7 +5,7 @@ Rustic Chess is a 3D chess application written in Rust. It uses bevy's game engi
 
 ## Compile and run
 1. Clone this repository: `git clone https://github.com/gandhi56/rustic_chess.git`
-2. `cd LVI_chess`
+2. `cd rustic_chess`
 3. To compile only, `cargo build` (Optional)
 4. To compile and run, `cargo run`
 
