@@ -7,7 +7,7 @@ pub enum PieceColor {
     Black,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PieceType {
     King,
     Queen,
@@ -552,6 +552,7 @@ fn create_pieces(
 // piece movement =============================================================================== //
 fn move_pieces(time: Res<Time>, mut query: Query<(&mut Transform, &Piece)>) {
     for (mut transform, piece) in query.iter_mut() {
+
         // Get the direction to move in
         let direction = Vec3::new(piece.x as f32, 0., piece.y as f32) - transform.translation;
 
