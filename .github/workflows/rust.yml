@@ -1,4 +1,5 @@
 name: Rust
+  - run: sudo apt-get install libsdl2-dev
 
 on:
   push:
