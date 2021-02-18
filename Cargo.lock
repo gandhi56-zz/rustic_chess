@@ -9,14 +9,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
 
 [[package]]
-name = "LVI_chess"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "bevy_mod_picking",
-]
-
-[[package]]
 name = "ab_glyph"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2912,6 +2904,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 dependencies = [
  "semver",
+]
+
+[[package]]
+name = "rustic_chess"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_mod_picking",
 ]
 
 [[package]]

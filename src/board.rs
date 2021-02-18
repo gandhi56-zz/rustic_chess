@@ -1,30 +1,30 @@
-use bevy::prelude::*;
-use bevy_mod_picking::{PickableMesh, PickState, Group};
 use crate::pieces::*;
 use bevy::app::AppExit;
+use bevy::prelude::*;
+use bevy_mod_picking::{Group, PickState, PickableMesh};
 
 const ROWS: u8 = 8;
 const COLS: u8 = 8;
 
-pub struct Square{
+pub struct Square {
     pub x: u8,
     pub y: u8,
 }
 
-impl Square{
-    fn is_white(&self) -> bool{
+impl Square {
+    fn is_white(&self) -> bool {
         (self.x + self.y + 1) % 2 == 0
     }
 }
 
 #[derive(Default)]
-struct SelectedSquare{
-    entity: Option<Entity>
+struct SelectedSquare {
+    entity: Option<Entity>,
 }
 
 #[derive(Default)]
-struct SelectedPiece{
-    entity: Option<Entity>
+struct SelectedPiece {
+    entity: Option<Entity>,
 }
 
 pub fn create_board(
@@ -51,10 +51,7 @@ pub fn create_board(
                     ..Default::default()
                 })
                 .with(PickableMesh::default())
-                .with(Square {
-                    x: i,
-                    y: j,
-                });
+                .with(Square { x: i, y: j });
         }
     }
 }
@@ -89,7 +86,6 @@ fn color_squares(
     }
 }
 
-
 pub struct BoardPlugin;
 impl Plugin for BoardPlugin {
     fn build(&self, app: &mut AppBuilder) {
@@ -106,8 +102,6 @@ impl Plugin for BoardPlugin {
             .add_system(reset_selected.system());
     }
 }
-
-
 
 fn select_square(
     pick_state: Res<PickState>,
@@ -165,7 +159,6 @@ fn select_piece(
         }
     }
 }
-
 
 fn move_piece(
     commands: &mut Commands,
@@ -264,23 +257,19 @@ fn despawn_taken_pieces(
     }
 }
 
-
-
 // Turns ======================================================================================== //
 pub(crate) struct PlayerTurn(pub(crate) PieceColor);
-impl Default for PlayerTurn{
-    fn default() -> Self{
+impl Default for PlayerTurn {
+    fn default() -> Self {
         Self(PieceColor::White)
     }
 }
 
-impl PlayerTurn{
-    fn change(&mut self){
-        self.0 = match self.0{
+impl PlayerTurn {
+    fn change(&mut self) {
+        self.0 = match self.0 {
             PieceColor::White => PieceColor::Black,
-            PieceColor::Black => PieceColor::White
+            PieceColor::Black => PieceColor::White,
         }
     }
 }
-
-
