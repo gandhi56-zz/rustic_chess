@@ -6,6 +6,7 @@ use bevy_mod_picking::{Group, PickState, PickableMesh};
 const ROWS: u8 = 8;
 const COLS: u8 = 8;
 
+#[derive(Debug)]
 pub struct Square {
     pub x: u8,
     pub y: u8,
@@ -168,6 +169,8 @@ fn move_piece(
     squares_query: Query<&Square>,
     mut pieces_query: Query<(Entity, &mut Piece)>,
     mut reset_selected_event: ResMut<Events<ResetSelectedEvent>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>
 ) {
     let square_entity = if let Some(entity) = selected_square.entity {
         entity
@@ -195,7 +198,73 @@ fn move_piece(
                 return;
             };
 
+
         if piece.is_move_valid((square.x, square.y), pieces_vec) {
+
+            // perform castling
+            match piece.piece_type{
+                PieceType::King =>{
+                    if piece.x == square.x && piece.y == 4 && square.y == 6{
+                        // move king to its new position
+                        piece.y = 6;
+
+                        // find corresponding rook, take it out and respawn it to its new position
+                        for (other_entity, other_piece) in &pieces_entity_vec{
+                            if other_piece.x == square.x &&
+                                other_piece.y == 7 &&
+                                other_piece.piece_type == PieceType::Rook &&
+                                other_piece.color == piece.color{
+
+                                    // take the castle rook out
+                                    commands.insert_one(*other_entity, Taken);
+
+                                    // respawn rook at its new position
+                                    spawn_rook(
+                                        commands,
+                                        match piece.color{
+                                            PieceColor::Black => materials.add(Color::rgb(0., 0.2, 0.2).into()),
+                                            PieceColor::White => materials.add(Color::rgb(1., 0.8, 0.8).into()),
+                                        },
+                                        piece.color,
+                                        asset_server.load("models/chess_kit/pieces.glb#Mesh5/Primitive0"),
+                                        (piece.x, 5)
+                                    );
+                                }
+                        }
+
+                        // toggle turn
+                        turn.change();
+                        return;
+                    }
+                    else if piece.x == square.x && piece.y == 4 && square.y == 2{
+                                                // find corresponding rook, take it out and respawn it to its new position
+                        for (other_entity, other_piece) in &pieces_entity_vec{
+                            if other_piece.x == square.x &&
+                                other_piece.y == 0 &&
+                                other_piece.piece_type == PieceType::Rook &&
+                                other_piece.color == piece.color{
+
+                                    // take the castle rook out
+                                    commands.insert_one(*other_entity, Taken);
+
+                                    // respawn rook at its new position
+                                    spawn_rook(
+                                        commands,
+                                        match piece.color{
+                                            PieceColor::Black => materials.add(Color::rgb(0., 0.2, 0.2).into()),
+                                            PieceColor::White => materials.add(Color::rgb(1., 0.8, 0.8).into()),
+                                        },
+                                        piece.color,
+                                        asset_server.load("models/chess_kit/pieces.glb#Mesh5/Primitive0"),
+                                        (piece.x, 3)
+                                    );
+                                }
+                        }
+                    }
+                }
+                _ => {}
+            }
+
             // Check if a piece of the opposite color exists in this square and despawn it
             for (other_entity, other_piece) in pieces_entity_vec {
                 if other_piece.x == square.x
@@ -234,6 +303,8 @@ fn reset_selected(
 }
 
 struct Taken;
+// struct Castle;
+
 fn despawn_taken_pieces(
     commands: &mut Commands,
     mut app_exit_events: ResMut<Events<AppExit>>,
