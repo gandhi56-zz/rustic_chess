@@ -11,8 +11,8 @@ env:
 
 jobs:
   build:
-    run: sudo apt-get install libsdl2-dev
     runs-on: ubuntu-latest
+    - run: sudo apt-get install libsdl2-dev
 
     steps:
     - uses: actions/checkout@v2
