@@ -6,6 +6,7 @@ use bevy_mod_picking::{Group, PickState, PickableMesh};
 const ROWS: u8 = 8;
 const COLS: u8 = 8;
 
+#[derive(Debug)]
 pub struct Square {
     pub x: u8,
     pub y: u8,
@@ -195,7 +196,28 @@ fn move_piece(
                 return;
             };
 
+
         if piece.is_move_valid((square.x, square.y), pieces_vec) {
+
+            // perform castling
+            match piece.piece_type{
+                PieceType::King =>{
+
+                    let dist = ((square.y as i8) - (piece.y as i8)).abs();
+
+                    if piece.x == square.x && dist == 2{
+                        piece.x = square.x;
+                        piece.y = square.y;
+
+                        // find corresponding rook and move it as well
+                        // find_castle_rook(&piece, pieces_vec);
+                        turn.change();
+                        return;
+                    }
+                }
+                _ =>{}
+            }
+
             // Check if a piece of the opposite color exists in this square and despawn it
             for (other_entity, other_piece) in pieces_entity_vec {
                 if other_piece.x == square.x

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 // Piece attributes ============================================================================= //
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PieceColor {
     White,
     Black,
@@ -17,7 +17,7 @@ pub enum PieceType {
     Pawn,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Piece {
     pub color: PieceColor,
     pub piece_type: PieceType,
@@ -27,15 +27,22 @@ pub struct Piece {
 }
 
 impl Piece{
-    // TODO en passant and castling
     pub fn is_move_valid(&self, new_position: (u8, u8), pieces: Vec<Piece>) -> bool{
         if color_of_square(new_position, &pieces) == Some(self.color){
             return false;
         }
         match self.piece_type {
             PieceType::King => {
+                // castle
+                // TODO check for corresponding rook
+                (is_path_empty((self.x, self.y), new_position, &pieces)
+                && (new_position.0 == 0 && new_position.1 == 6)
+                || (new_position.0 == 0 && new_position.1 == 2)
+                || (new_position.0 == 7 && new_position.1 == 6)
+                || (new_position.0 == 7 && new_position.1 == 2))
+
                 // horizontal
-                ((self.x as i8 - new_position.0 as i8).abs() == 1
+                || ((self.x as i8 - new_position.0 as i8).abs() == 1
                 && (self.y == new_position.1))
 
                 // vertical
