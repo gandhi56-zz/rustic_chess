@@ -184,7 +184,7 @@ fn move_piece(
 
     if let Some(selected_piece_entity) = selected_piece.entity {
         let pieces_vec = pieces_query.iter_mut().map(|(_, piece)| *piece).collect();
-        let pieces_entity_vec = pieces_query
+        let mut pieces_entity_vec = pieces_query
             .iter_mut()
             .map(|(entity, piece)| (entity, *piece))
             .collect::<Vec<(Entity, Piece)>>();
@@ -202,15 +202,24 @@ fn move_piece(
             // perform castling
             match piece.piece_type{
                 PieceType::King =>{
-
-                    let dist = ((square.y as i8) - (piece.y as i8)).abs();
-
-                    if piece.x == square.x && dist == 2{
-                        piece.x = square.x;
-                        piece.y = square.y;
+                    println!("square position: {:?}", square);
+                    if piece.x == square.x && piece.y == 4 && square.y == 6{
+                        // piece.y = 6;
 
                         // find corresponding rook and move it as well
-                        // find_castle_rook(&piece, pieces_vec);
+                        /// FIXME mutable borrow twice
+                        for (_, other_piece) in pieces_query.iter_mut(){
+                            // println!("Found {:?}", other_piece);
+                            if other_piece.piece_type == PieceType::Rook &&
+                                other_piece.color == piece.color &&
+                                other_piece.x == piece.x &&
+                                other_piece.y == 7{
+                                println!("Rook found");
+                                other_piece.y = 5;
+                            }
+                        }
+
+
                         turn.change();
                         return;
                     }
