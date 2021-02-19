@@ -1,4 +1,5 @@
 use crate::pieces::*;
+use crate::{get_rook_handle};
 use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy_mod_picking::{Group, PickState, PickableMesh};
@@ -28,6 +29,10 @@ struct SelectedPiece {
     entity: Option<Entity>,
 }
 
+/**
+ * @brief 
+ * 
+ * */
 pub fn create_board(
     commands: &mut Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -168,6 +173,22 @@ fn get_material(mut materials: ResMut<Assets<StandardMaterial>>, color: &PieceCo
     }
 }
 
+fn check_despawn(
+    commands: &mut Commands, 
+    square: &Square, 
+    piece: &bevy::prelude::Mut<Piece>, 
+    pieces_entity_vec: Vec<(bevy::prelude::Entity, Piece)>){
+    for (other_entity, other_piece) in pieces_entity_vec {
+        if other_piece.x == square.x
+            && other_piece.y == square.y
+            && other_piece.color != piece.color
+        {
+            // Mark the piece as taken
+            commands.insert_one(other_entity, Taken);
+        }
+    }
+}
+
 fn move_piece(
     commands: &mut Commands,
     selected_square: ChangedRes<SelectedSquare>,
@@ -220,25 +241,24 @@ fn move_piece(
                                 other_piece.piece_type == PieceType::Rook &&
                                 other_piece.color == piece.color{
 
-                                    // move king to its new position
-                                    piece.y = 6;
+                                // move king to its new position
+                                piece.y = 6;
 
-                                    // take the castle rook out
-                                    commands.insert_one(*other_entity, Taken);
+                                // take the castle rook out
+                                commands.insert_one(*other_entity, Taken);
 
-                                    // respawn rook at its new position
-                                    spawn_rook(commands, get_material(materials, &piece.color), piece.color, 
-                                        asset_server.load("models/chess_kit/pieces.glb#Mesh5/Primitive0"),
-                                        (piece.x, 5)
-                                    );
+                                // respawn rook at its new position
+                                spawn_rook(commands, get_material(materials, &piece.color), piece.color, get_rook_handle(&asset_server),
+                                    (piece.x, 5)
+                                );
 
-                                    turn.change();
-                                    return;
-                                }
+                                turn.change();
+                                return;
+                            }
                         }
                     }
                     else if piece.x == square.x && piece.y == 4 && square.y == 2{
-                                                // find corresponding rook, take it out and respawn it to its new position
+                        // find corresponding rook, take it out and respawn it to its new position
                         for (other_entity, other_piece) in &pieces_entity_vec{
                             if other_piece.x == square.x &&
                                 other_piece.y == 0 &&
@@ -267,15 +287,7 @@ fn move_piece(
             }
 
             // Check if a piece of the opposite color exists in this square and despawn it
-            for (other_entity, other_piece) in pieces_entity_vec {
-                if other_piece.x == square.x
-                    && other_piece.y == square.y
-                    && other_piece.color != piece.color
-                {
-                    // Mark the piece as taken
-                    commands.insert_one(other_entity, Taken);
-                }
-            }
+            check_despawn(commands, square, &piece, pieces_entity_vec);
 
             // Move piece
             piece.x = square.x;
@@ -304,7 +316,6 @@ fn reset_selected(
 }
 
 struct Taken;
-// struct Castle;
 
 fn despawn_taken_pieces(
     commands: &mut Commands,

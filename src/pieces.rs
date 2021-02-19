@@ -37,7 +37,7 @@ impl Piece{
         match self.piece_type {
             PieceType::King => {
                 // castle
-                // TODO check for corresponding rook
+                // corresponding rook is 
                 (is_path_empty((self.x, self.y), new_position, &pieces)
                 && (new_position.0 == 0 && new_position.1 == 6)
                 || (new_position.0 == 0 && new_position.1 == 2)
