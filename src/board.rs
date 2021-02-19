@@ -29,9 +29,26 @@ struct SelectedPiece {
     entity: Option<Entity>,
 }
 
+pub struct BoardPlugin;
+impl Plugin for BoardPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.init_resource::<SelectedSquare>()
+            .init_resource::<SelectedPiece>()
+            .init_resource::<PlayerTurn>()
+            .add_event::<ResetSelectedEvent>()
+            .add_startup_system(create_board.system())
+            .add_system(color_squares.system())
+            .add_system(select_square.system())
+            .add_system(move_piece.system())
+            .add_system(select_piece.system())
+            .add_system(despawn_taken_pieces.system())
+            .add_system(reset_selected.system());
+    }
+}
+
 /**
- * @brief 
- * 
+ * @brief adds board mesh plane, spawns ROWS * COLS squares with 
+ *  pickable mesh enabled
  * */
 pub fn create_board(
     commands: &mut Commands,
@@ -47,6 +64,7 @@ pub fn create_board(
             commands
                 .spawn(PbrBundle {
                     mesh: mesh.clone(),
+
                     // Change material according to position to get alternating pattern
                     material: if (i + j + 1) % 2 == 0 {
                         materials.add(Color::rgb(1., 0.9, 0.9).into())
@@ -62,6 +80,9 @@ pub fn create_board(
     }
 }
 
+/**
+ * @brief set square colors based on albedo
+ * */
 fn color_squares(
     pick_state: Res<PickState>,
     selected_square: Res<SelectedSquare>,
@@ -92,23 +113,10 @@ fn color_squares(
     }
 }
 
-pub struct BoardPlugin;
-impl Plugin for BoardPlugin {
-    fn build(&self, app: &mut AppBuilder) {
-        app.init_resource::<SelectedSquare>()
-            .init_resource::<SelectedPiece>()
-            .init_resource::<PlayerTurn>()
-            .add_event::<ResetSelectedEvent>()
-            .add_startup_system(create_board.system())
-            .add_system(color_squares.system())
-            .add_system(select_square.system())
-            .add_system(move_piece.system())
-            .add_system(select_piece.system())
-            .add_system(despawn_taken_pieces.system())
-            .add_system(reset_selected.system());
-    }
-}
-
+/**
+ * @brief handle the left mouse click event, set the selected square entity 
+ *  or handle square deselection
+ * */
 fn select_square(
     pick_state: Res<PickState>,
     mouse_button_inputs: Res<Input<MouseButton>>,
@@ -135,6 +143,9 @@ fn select_square(
     }
 }
 
+/**
+ * @brief select the piece in the selected square
+ * */
 fn select_piece(
     selected_square: ChangedRes<SelectedSquare>,
     mut selected_piece: ResMut<SelectedPiece>,
@@ -166,6 +177,9 @@ fn select_piece(
     }
 }
 
+/**
+ * @brief return standard material based on the piece color
+ * */
 fn get_material(mut materials: ResMut<Assets<StandardMaterial>>, color: &PieceColor) -> Handle<StandardMaterial> {
     match color{
         PieceColor::Black => return materials.add(Color::rgb(0., 0.2, 0.2).into()),
@@ -173,6 +187,9 @@ fn get_material(mut materials: ResMut<Assets<StandardMaterial>>, color: &PieceCo
     }
 }
 
+/**
+ * @brief
+ * */
 fn check_despawn(
     commands: &mut Commands, 
     square: &Square, 
