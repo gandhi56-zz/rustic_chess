@@ -4,8 +4,10 @@ use bevy_mod_picking::*;
 mod pieces;
 mod board;
 mod ui;
+mod assets_garage;
 
 use pieces::*;
+use assets_garage::*;
 use crate::board::BoardPlugin;
 use crate::ui::UIPlugin;
 
@@ -18,6 +20,7 @@ fn main() {
             height: 1600.,
             ..Default::default()
         })
+        .add_resource(ClearColor(Color::rgb(0.2, 0.2, 0.4)))
         .add_plugins(DefaultPlugins)
         .add_plugin(PickingPlugin)
         .add_plugin(BoardPlugin)

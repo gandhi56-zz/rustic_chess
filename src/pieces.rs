@@ -1,3 +1,6 @@
+use crate::{get_king_cross_handle, 
+    get_king_handle, get_bishop_handle, get_knight1_handle, get_knight2_handle, get_pawn_handle, 
+    get_queen_handle, get_rook_handle};
 use bevy::prelude::*;
 
 // Piece attributes ============================================================================= //
@@ -387,22 +390,14 @@ fn create_pieces(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ){
     // Load all the meshes
-    let king_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh0/Primitive0");
-    let king_cross_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh1/Primitive0");
-    let pawn_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh2/Primitive0");
-    let knight_1_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh3/Primitive0");
-    let knight_2_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh4/Primitive0");
-    let rook_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh5/Primitive0");
-    let bishop_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh6/Primitive0");
-    let queen_handle: Handle<Mesh> =
-        asset_server.load("models/chess_kit/pieces.glb#Mesh7/Primitive0");
+    let king_handle: Handle<Mesh> = get_king_handle(&asset_server);
+    let king_cross_handle: Handle<Mesh> = get_king_cross_handle(&asset_server);
+    let pawn_handle: Handle<Mesh> = get_pawn_handle(&asset_server);
+    let knight_1_handle: Handle<Mesh> = get_knight1_handle(&asset_server);
+    let knight_2_handle: Handle<Mesh> = get_knight2_handle(&asset_server);
+    let rook_handle: Handle<Mesh> = get_rook_handle(&asset_server);
+    let bishop_handle: Handle<Mesh> = get_bishop_handle(&asset_server);
+    let queen_handle: Handle<Mesh> = get_queen_handle(&asset_server);
 
     // Add some materials
     let white_material = materials.add(Color::rgb(1., 0.8, 0.8).into());
